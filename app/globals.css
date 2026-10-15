@@ -1,0 +1,183 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ---------------------------------------------------------------------------
+   Bondhu Circle design tokens
+   Warm neutral palette, one soft-teal accent, 14px radius, borders over shadows.
+--------------------------------------------------------------------------- */
+
+:root {
+  --radius: 0.875rem;
+
+  --background: #fbfdfc;
+  --foreground: #10201d;
+
+  --card: #ffffff;
+  --card-foreground: #10201d;
+
+  --popover: #ffffff;
+  --popover-foreground: #10201d;
+
+  --primary: #0f766e;
+  --primary-foreground: #f4fffd;
+
+  --secondary: #eef4f2;
+  --secondary-foreground: #14322d;
+
+  --muted: #f1f5f4;
+  --muted-foreground: #5b6b67;
+
+  --accent: #e2f2ee;
+  --accent-foreground: #0c4f49;
+
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+
+  --border: #e2e9e7;
+  --input: #d5dedb;
+  --ring: #0f766e;
+
+  --success: #157f5f;
+  --warning: #b45309;
+
+  --chart-1: #0f766e;
+  --chart-2: #0891b2;
+  --chart-3: #65a30d;
+  --chart-4: #d97706;
+  --chart-5: #7c3aed;
+}
+
+.dark {
+  --background: #0b1413;
+  --foreground: #e7eeec;
+
+  --card: #101c1a;
+  --card-foreground: #e7eeec;
+
+  --popover: #101c1a;
+  --popover-foreground: #e7eeec;
+
+  --primary: #2dd4bf;
+  --primary-foreground: #04211d;
+
+  --secondary: #172523;
+  --secondary-foreground: #dbe7e4;
+
+  --muted: #16211f;
+  --muted-foreground: #94a3a0;
+
+  --accent: #14312d;
+  --accent-foreground: #c8f5ee;
+
+  --destructive: #f87171;
+  --destructive-foreground: #2a0806;
+
+  --border: #1f2e2c;
+  --input: #263735;
+  --ring: #2dd4bf;
+
+  --success: #34d399;
+  --warning: #fbbf24;
+
+  --chart-1: #2dd4bf;
+  --chart-2: #38bdf8;
+  --chart-3: #a3e635;
+  --chart-4: #fbbf24;
+  --chart-5: #c084fc;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "cv02", "cv03", "cv04";
+    text-rendering: optimizeLegibility;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Bangla text needs a touch more line-height to stay readable. */
+  .bn-body {
+    font-family: var(--font-hind), var(--font-inter), system-ui, sans-serif;
+    line-height: 1.7;
+  }
+
+  .card-hover {
+    transition:
+      transform 200ms ease,
+      border-color 200ms ease;
+  }
+
+  .card-hover:hover {
+    transform: translateY(-2px);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}

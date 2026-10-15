@@ -1,0 +1,70 @@
+"use server";
+
+import "server-only";
+
+import { and, eq } from "drizzle-orm";
+
+import { ActionError, type ActionContext, createAction } from "@/lib/actions/action";
+import { db } from "@/lib/db";
+import { activities, feedback, rsvps } from "@/lib/db/schema";
+import { feedbackSchema } from "@/lib/validations";
+import { notify } from "@/lib/notify";
+
+/**
+ * Private post-meetup feedback. Never surfaced publicly: rows are only ever
+ * read in aggregate for admin metrics.
+ */
+export const submitFeedback = createAction({
+  schema: feedbackSchema,
+  authorize: "user",
+  rateLimit: { key: "feedback" },
+  revalidate: ["/home", "/activities"],
+  handler: async (input, { user }: ActionContext) => {
+    const activityRows = await db
+      .select()
+      .from(activities)
+      .where(eq(activities.id, input.activityId))
+      .limit(1);
+    const activity = activityRows[0];
+    if (!activity) throw new ActionError("errors.notFoundTitle");
+
+    const rsvpRows = await db
+      .select()
+      .from(rsvps)
+      .where(eq(rsvps.activityId, input.activityId))
+      .limit(50);
+    const mine = rsvpRows.find((r) => r.userId === user.id);
+    if (!mine || mine.status !== "going") throw new ActionError("errors.unauthorized");
+
+    const existing = await db
+      .select({ id: feedback.id })
+      .from(feedback)
+      .where(and(eq(feedback.userId, user.id), eq(feedback.activityId, input.activityId)))
+      .limit(1);
+    if (existing.length) throw new ActionError("feedback.already");
+
+    await db
+      .insert(feedback)
+      .values({
+        userId: user.id,
+        activityId: input.activityId,
+        circleId: activity.circleId,
+        comfortable: input.comfortable,
+        wantToMeetAgain: input.wantToMeetAgain,
+        madeConnection: input.madeConnection,
+        note: input.note || null,
+      })
+      .onConflictDoNothing();
+
+    await notify({
+      userId: user.id,
+      type: "feedback_request",
+      title: activity.title,
+      body: "",
+      href: "/home",
+      payload: { activityId: activity.id, thanked: true },
+    });
+
+    return { submitted: true };
+  },
+});
